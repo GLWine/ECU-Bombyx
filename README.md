@@ -1,5 +1,5 @@
 # ECU documentation for Bombyx mori
-Environmental control unit design for Bombyx mori
+Thesis on the Design and use of the environmental control unit for Bombyx mori 
 
 # License
 This program is free software: you can redistribute it and/or modify
