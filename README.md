@@ -1,7 +1,15 @@
 # ECU documentation for Bombyx mori
+
+![GitHub last commit](https://img.shields.io/github/last-commit/GLWine/ECU-Bombyx?logo=github&style=social)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/GLWine/ECU-Bombyx?include_prereleases&style=social)
+![GitHub All Releases](https://img.shields.io/github/downloads/GLWine/ECU-Bombyx/total?style=social)
+
 Thesis on the Design and use of the environmental control unit for Bombyx mori 
 
-# License
+#### [**Download now!**](https://github.com/bonsky97/AudioSpeedUp/releases/latest/download/AudioSpeedUp.apk) 
+
+# License   [![GitHub license](https://img.shields.io/github/license/GLWine/ECU-Bombyx)](https://github.com/GLWine/ECU-Bombyx/blob/master/LICENSE.md)
+
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
