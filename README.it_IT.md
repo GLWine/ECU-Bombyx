@@ -6,7 +6,7 @@
 
 Tesi sulla progettazione e l'uso dell'unità di controllo ambientale per Bombyx mori
 
-#### [**Download now!**](https://github.com/bonsky97/AudioSpeedUp/releases/latest/download/AudioSpeedUp.apk) 
+[*Leggimi*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.md)
 
 # Licenza   [![GitHub license](https://img.shields.io/github/license/GLWine/ECU-Bombyx)](https://github.com/GLWine/ECU-Bombyx/blob/master/LICENSE.md)
 
