@@ -6,7 +6,14 @@
 
 Tesi sulla progettazione e l'uso dell'unità di controllo ambientale per Bombyx mori
 
-[*Leggimi*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.md)
+[*Readme*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.md)
+
+<table cellspacing=”0″ cellpadding=”0″ width=”560″ border="0">
+<tbody>
+<tr>
+<td valign=”top” width=”250”><img border="0" src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/Alto.png"></td>
+<td valign=”top” width=”250”><img border="0" src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/ECU-B.png"></td>
+</tr></tbody></table>
 
 # Licenza   [![GitHub license](https://img.shields.io/github/license/GLWine/ECU-Bombyx)](https://github.com/GLWine/ECU-Bombyx/blob/master/LICENSE.md)
 
