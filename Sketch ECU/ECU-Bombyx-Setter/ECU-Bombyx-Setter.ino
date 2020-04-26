@@ -6,7 +6,7 @@
 // ADD the following Arduino libraries:
 #include <SD.h>
 #include <SPI.h>
-#include <RTClib.h> // RTC:  RTClib by adafruit V.1.4.1
+#include <RTClib.h> // RTC:  RTClib by adafruit V.1.5.0
 #include <DHT.h> /*DHT: DHT sensor librery by Adafruit V.1.3.8
                   *     Adafruit Unified Sensor by Adafruit V.1.1.2                        
                   *     Adafruit ADXL343 by Adafruit V.1.2.0 
@@ -29,6 +29,7 @@ RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
 const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}; // array declaration for the days of the week
 
 void setup() {
+  // Open serial communications and wait for port to open:
   Serial.begin(9600); // 9600 bps serial port setting
   delay(2000);
   dhtMain(); // Start the function that contains what DHT should do

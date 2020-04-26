@@ -1,16 +1,24 @@
-// RICHIEDE le seguenti librerie Arduino:
-#include <DHT.h>
-#include <RTClib.h>
+/* The following code is used to set the different components 
+ * and to check that everyone answers the call, leaving the 
+ * answer on the serial monitor. 
+ */
+
+// ADD the following Arduino libraries:
 #include <SD.h>
 #include <SPI.h>
+#include <RTClib.h> // RTC:  RTClib by adafruit V.1.5.0
+#include <DHT.h> /*DHT: DHT sensor librery by Adafruit V.1.3.8
+                  *     Adafruit Unified Sensor by Adafruit V.1.1.2                        
+                  *     Adafruit ADXL343 by Adafruit V.1.2.0 
+                  */
 
 // set up variables using the DHT 22:
 #define DHTPIN 2 //Pin select DHT 
 #define DHTTYPE DHT22 // DHT 22  (AM2302), AM2321
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE); // Declare the DHT data pin and model to the DHT library
 
 // set up variables using the SD utility library functions:
-#define chipSelect 8
+#define chipSelect 8 // declare the pin that is connected to the chip select
 static String dataString = "000000000000000000000000000000"; // make a string for assembling the data to log
 static String dFile = "000000000000";
 static int timer = 1441;
@@ -19,12 +27,13 @@ long t1 =0;
 long pouse = 15*1000;
 
 // set up variables using the DS3231 RTC:
-RTC_DS3231 rtc;
+RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
 
 void setup() {
   // Open serial communications and wait for port to open:
-  Serial.begin(9600);
-
+  Serial.begin(9600); // 9600 bps serial port setting
+  delay(2000);
+  
   rtcSet();
   sdSet();
   DHTSet();
