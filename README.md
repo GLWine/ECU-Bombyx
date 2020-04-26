@@ -7,6 +7,10 @@
 Thesis on the Design and use of the environmental control unit for Bombyx mori 
 
 [*Leggimi*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.it_IT.md)
+<FRAMESET>
+  <img src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/Alto.png" width=250>
+  <img src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/ECU-B.png" width=250 align=right>
+  </FRAMESET>
 
 # License   [![GitHub license](https://img.shields.io/github/license/GLWine/ECU-Bombyx)](https://github.com/GLWine/ECU-Bombyx/blob/master/LICENSE.md)
 
