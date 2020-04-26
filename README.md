@@ -8,11 +8,11 @@ Thesis on the Design and use of the environmental control unit for Bombyx mori
 
 [*Leggimi*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.it_IT.md)
 
-<table cellspacing=”0″ cellpadding=”0″ width=”560″>
+<table cellspacing=”0″ cellpadding=”0″ width=”560″ border="0">
 <tbody>
 <tr>
-<td valign=”top” ><img border=0 src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/Alto.png"></td>
-<td valign=”top” ><img border=0 src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/ECU-B.png"></td>
+<td valign=”top” width=”250”><img border="0" src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/Alto.png"></td>
+<td valign=”top” width=”250”><img border="0" src="https://github.com/GLWine/ECU-Bombyx/blob/master/Prototipo%203D/ECU-B.png"></td>
 </tr></tbody></table>
 
 # License   [![GitHub license](https://img.shields.io/github/license/GLWine/ECU-Bombyx)](https://github.com/GLWine/ECU-Bombyx/blob/master/LICENSE.md)
