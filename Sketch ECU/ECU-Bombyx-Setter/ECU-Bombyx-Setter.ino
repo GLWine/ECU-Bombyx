@@ -26,7 +26,8 @@ SdFile root; // standard declaration for microSD operation
 // set up variables using the DS3231 RTC:
 RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
 
-const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}; // array declaration for the days of the week
+// array declaration for the days of the week
+const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 void setup() {
   // Open serial communications and wait for port to open:
@@ -41,9 +42,10 @@ void setup() {
 }
 
 void loop() {
-
+// no use of the loop since they only need to be set once
 }
 
+// Function that realizes the presence and activity of DHT
 void dhtMain(){
   Serial.println(F("DHTxx test!")); // warns that DHT will be tested
   dht.begin(); // standard declaration
@@ -60,6 +62,7 @@ void dhtMain(){
     return;
   }
 
+  // scrive sul serial monitor prima l'umidita' e dopo la temperatura
   Serial.print(F("Humidity: "));
   Serial.print(h);
   Serial.print(F("%  Temperature: "));
@@ -67,6 +70,7 @@ void dhtMain(){
   Serial.println(F("°C \n"));  
 }
 
+// Function that realizes the presence and activity of the SD
 void sdMain(){
   Serial.print(F("\nInitializing SD card..."));
 
@@ -137,6 +141,7 @@ void sdMain(){
   root.ls(LS_R | LS_DATE | LS_SIZE);
 }
 
+// Function that realizes the presence and activity of the RTC
 void rtc3231(){
   Serial.println();
   if (! rtc.begin()) {
@@ -154,6 +159,7 @@ void rtc3231(){
     Serial.println();
   }
   
+  // show the date, the day of the week and the current time on the screen
   DateTime now = rtc.now();
 
     Serial.print(now.year(), DEC);
@@ -177,23 +183,7 @@ void rtc3231(){
     Serial.print(now.unixtime() / 86400L);
     Serial.println(F("d"));
 
-    // calculate a date which is 7 days and 30 seconds into the future
-    DateTime future (now + TimeSpan(7,12,30,6));
-
-    Serial.print(F(" now + 7d + 30s: "));
-    Serial.print(future.year(), DEC);
-    Serial.print('/');
-    Serial.print(future.month(), DEC);
-    Serial.print('/');
-    Serial.print(future.day(), DEC);
-    Serial.print(' ');
-    Serial.print(future.hour(), DEC);
-    Serial.print(':');
-    Serial.print(future.minute(), DEC);
-    Serial.print(':');
-    Serial.print(future.second(), DEC);
-    Serial.println();
-
+    // expresses the temperature read by the RTC
     Serial.print(F("Temperature: "));
     Serial.print(rtc.getTemperature());
     Serial.println(F(" C"));
