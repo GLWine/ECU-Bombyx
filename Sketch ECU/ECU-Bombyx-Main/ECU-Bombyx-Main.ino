@@ -19,16 +19,24 @@ DHT dht(DHTPIN, DHTTYPE); // Declare the DHT data pin and model to the DHT libra
 
 // set up variables using the SD utility library functions:
 #define chipSelect 8 // declare the pin that is connected to the chip select
-static String dataString = "000000000000000000000000000000"; // make a string for assembling the data to log
-static String dFile = "000000000000";
+
+// set up variables using the DS3231 RTC:
+RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
+
+// declaration of the Global variables make a string for assembling the data to log
+static String dataString = "000000000000000000000000000000";
+// Enter the initial company name without spaces followed 
+// by a progressive number for each ECU installed,
+// also entering ".csv" (maximum 12 characters)
+// Ex. Seta Etica ECU 1 => "SE01.csv"
+static String company = ""; //fill in here
+// timer settings for sensor data R/W
 static int timer = 1441;
 static int timer2 = 0;
 long t1 =0;
 long pouse = 15*1000;
 
-// set up variables using the DS3231 RTC:
-RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
-
+//*********************************************************************************
 void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(9600); // 9600 bps serial port setting
@@ -55,29 +63,22 @@ void loop() {
     sdMain();
   }
 }
+//---------------------------------------------------------------------------------
 
-//Function setup()
+// Group of functions for setting the modules
+//*********************************************************************************
+
+// The function takes care of starting and if necessary 
+// setting the date and time of the DS3231
 void rtcSet(){
   if (! rtc.begin()) {
     Serial.println(F("Couldn't find RTC"));
     while (1);
   }
-
-  if (rtc.lostPower()) {
-    Serial.println(F("RTC lost power, lets set the time!"));
-    // If the RTC have lost power it will sets the RTC to the date & time this sketch was compiled in the following line
-    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-    // This line sets the RTC with an explicit date & time, for example to set
-    // January 21, 2014 at 3am you would call:
-    // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
-  }
-  
-  DateTime now = rtc.now();
-    char buf[] = "YY-MM-DD";
-    dFile =(now.toString(buf));
-    dFile +=(".csv");
 }
 
+// The function takes care of starting the SD module and, if necessary,
+// creating a "CSV" file with the current date
 void sdSet(){
   Serial.print(F("Initializing SD card..."));
 
@@ -88,12 +89,15 @@ void sdSet(){
     while (1);
   }
   Serial.println(F("card initialized."));
-  if(! SD.exists(dFile)){
-    File dataFile = SD.open(dFile, FILE_WRITE);
+  
+// Check if there is a file with the name given by the variable "company",
+// otherwise it creates and initializes it
+  if(! SD.exists(company)){
+    File dataFile = SD.open(company, FILE_WRITE);
     dataFile.println(F("Data & Time;C-Temp;%-Humid"));
     dataFile.close();
-    Serial.print(dFile);
-    Serial.println(F(" initialized"));
+    Serial.print(company);
+    Serial.println(F(" file created"));
   }
 }
 void DHTSet(){
@@ -148,7 +152,7 @@ void DHTMain(){
 void sdMain(){
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
-  File dataFile = SD.open(dFile, FILE_WRITE);
+  File dataFile = SD.open(company, FILE_WRITE);
 
   // if the file is available, write to it:
   if (dataFile) {
@@ -159,6 +163,6 @@ void sdMain(){
   else {
     Serial.println(F("error opening datalog file"));
   }
-  Serial.print(dFile);
+  Serial.print(company);
   Serial.println(F(" update"));
 }
