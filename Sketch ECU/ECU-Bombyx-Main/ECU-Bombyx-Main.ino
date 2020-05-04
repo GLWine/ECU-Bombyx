@@ -24,17 +24,14 @@ DHT dht(DHTPIN, DHTTYPE); // Declare the DHT data pin and model to the DHT libra
 RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
 
 // declaration of the Global variables make a string for assembling the data to log
-static String dataString = "000000000000000000000000000000";
+static String dataOnTtheRow = "000000000000000000000000000000";
 // Enter the initial company name without spaces followed 
 // by a progressive number for each ECU installed,
 // also entering ".csv" (maximum 12 characters)
 // Ex. Seta Etica ECU 1 => "SE01.csv"
 static String company = ""; //fill in here
-// timer settings for sensor data R/W
-static int timer = 1441;
-static int timer2 = 0;
-long t1 =0;
-long pouse = 15*1000;
+// variable to which the 15 minutes to take the readings are added
+static unsigned long pouse = (15*60*1000);
 
 //*********************************************************************************
 void setup() {
@@ -45,23 +42,17 @@ void setup() {
   rtcSet();
   sdSet();
   DHTSet();
-  timerSet();
-  timer2 = timer;
-  t1=millis();
 }
 
 void loop() {
-  long diff =millis() - t1;
-  if(diff > pouse){
-  timerSet();
-  pouse += millis();
-  }
-  if(timer>=timer2 + 15){
-    timer2 = timer;
+  // If 15 minutes of use have passed a reading
+   if(millis()>pouse){
+    pouse+=(15*60*1000); // Further increase of 15 the pause value
+    delay(2000); // Safety delay in case of DHT reset
     rtcMain();
     DHTMain();
     sdMain();
-  }
+  }  
 }
 //---------------------------------------------------------------------------------
 
@@ -82,7 +73,7 @@ void rtcSet(){
 void sdSet(){
   Serial.print(F("Initializing SD card..."));
 
-  // see if the card is present and can be initialized:
+  // See if the card is present and can be initialized:
   if (!SD.begin(chipSelect)) {
     Serial.println(F("Card failed, or not present"));
     // don't do anything more:
@@ -100,38 +91,32 @@ void sdSet(){
     Serial.println(F(" file created"));
   }
 }
+
+// initialazied DHT22
 void DHTSet(){
-  dht.begin();
-  Serial.println(F("DHT 22 initialized"));
+dht.begin();
+Serial.println(F("DHT22 initialized"));
 }
+//---------------------------------------------------------------------------------
 
-void timerSet(){
-  DateTime now = rtc.now();
-    char buf1[] = "hh";
-    char buf2[] = "mm";
-    String s1 =(now.toString(buf1));
-    String s2 =(now.toString(buf2));
-    int hh= s1.toInt();
-    int mm= s2.toInt();
-    timer = (hh*60) + mm;
-    Serial.print(F("ore in minuti: "));
-    Serial.println(hh*60);
-    Serial.print(F("minuti: "));
-    Serial.println(mm);
-    Serial.print(F("timer: "));
-    Serial.print(timer);
-    Serial.println(F(" update!"));
-}
+// Group of functions for utilized the modules
+//*********************************************************************************
 
-//Function loop()
+// The function starts writing in the string that forms the first line
 void rtcMain(){
+  // I create a DateTime object and call it now 
+  // and pass it the constructor rtc.now();
   DateTime now = rtc.now();
-    Serial.println();
-    char buf2[] = "YY/MM/DD-hh:mm";
-    dataString =(now.toString(buf2));
-    dataString +=(";");
+  // I create a char variable to which I pass the scheme 
+  // with which to create the date and time
+  char buf[] = "YY/MM/DD-hh:mm";
+  // dnow.toString () function converts buf and
+  // passes the date to the variable "dataOnTtheRow"
+  dataOnTtheRow =(now.toString(buf));
+  dataOnTtheRow +=(";");
 }
 
+// Function for reading humidity and temperature
 void DHTMain(){
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -139,16 +124,20 @@ void DHTMain(){
   // Read temperature as Celsius (the default)
   float t = dht.readTemperature();
   
+  // Writing of the values read in the two variables
   if (isnan(h) || isnan(t)) {
     Serial.println(F("Failed to read from DHT sensor!"));
     return;
   }
-  dataString +=(t);
-  dataString +=(";");
-  dataString +=(h);
-  dataString +=(";");
+
+  // Passing data to the variable that will write to the SD
+  dataOnTtheRow +=(t);
+  dataOnTtheRow +=(";");
+  dataOnTtheRow +=(h);
+  dataOnTtheRow +=(";");
 }
 
+// Function that writes the data collected in the SD
 void sdMain(){
   // open the file. note that only one file can be open at a time,
   // so you have to close this one before opening another.
@@ -156,7 +145,7 @@ void sdMain(){
 
   // if the file is available, write to it:
   if (dataFile) {
-    dataFile.println(dataString);
+    dataFile.println(dataOnTtheRow);
     dataFile.close();
   }
   // if the file isn't open, pop up an error:
@@ -166,3 +155,4 @@ void sdMain(){
   Serial.print(company);
   Serial.println(F(" update"));
 }
+//---------------------------------------------------------------------------------
