@@ -4,7 +4,10 @@
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/GLWine/ECU-Bombyx?include_prereleases&style=social)
 ![GitHub All Releases](https://img.shields.io/github/downloads/GLWine/ECU-Bombyx/total?style=social)
 
-Tesi sulla progettazione e l'uso dell'unità di controllo ambientale per Bombyx mori
+Tesi sulla progettazione e l'uso dell'unità di controllo ambientale per Bombyx mori.
+Scopo: misurare gli sbalzi termici e di umidità per correlare eventuali effetti sul filato ottenuto.
+Il progetto si compone di un Arduino, un sensore di umidità e temperatura, un orologio e una scheda SD.
+Le letture vengono effettuate ogni 15 minuti luna dall'altra.
 
 [*Readme*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.md)
 

@@ -4,7 +4,10 @@
 ![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/GLWine/ECU-Bombyx?include_prereleases&style=social)
 ![GitHub All Releases](https://img.shields.io/github/downloads/GLWine/ECU-Bombyx/total?style=social)
 
-Thesis on the Design and use of the environmental control unit for Bombyx mori 
+Thesis on the design and use of the environmental control unit for Bombyx mori.
+Purpose: to measure changes in temperature and humidity to correlate any effects on the yarn obtained.
+The project consists of an Arduino, a humidity and temperature sensor, a clock and an SD card.
+Readings are taken every 15 minutes on the other moon.
 
 [*Leggimi*](https://github.com/GLWine/ECU-Bombyx/blob/master/README.it_IT.md)
 

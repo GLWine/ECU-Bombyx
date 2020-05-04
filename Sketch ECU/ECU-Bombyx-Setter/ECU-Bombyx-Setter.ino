@@ -1,52 +1,54 @@
-// RICHIEDE le seguenti librerie Arduino:
-#include <DHT.h>
-#include <OneWire.h>
-#include <DallasTemperature.h>
-#include <RTClib.h>
+/* The following code is used to set the different components 
+ * and to check that everyone answers the call, leaving the 
+ * answer on the serial monitor. 
+ */
+
+// ADD the following Arduino libraries:
 #include <SD.h>
 #include <SPI.h>
-
-// set up variables using the DS 18B20:
-#define ONE_WIRE_BUS 4 //Pin select DS 18B20
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature temp(&oneWire);
-static float tc = 0;
-
+#include <RTClib.h> // RTC:  RTClib by adafruit V.1.5.0
+#include <DHT.h> /*DHT: DHT sensor librery by Adafruit V.1.3.8
+                  *     Adafruit Unified Sensor by Adafruit V.1.1.2                        
+                  *     Adafruit ADXL343 by Adafruit V.1.2.0 
+                  */
+                  
 // set up variables using the DHT 22:
 #define DHTPIN 2 //Pin select DHT 
 #define DHTTYPE DHT22 // DHT 22  (AM2302), AM2321
-DHT dht(DHTPIN, DHTTYPE);
+DHT dht(DHTPIN, DHTTYPE); // Declare the DHT data pin and model to the DHT library
 
 // set up variables using the SD utility library functions:
-#define chipSelect 8
-Sd2Card card;
-SdVolume volume;
-SdFile root;
+#define chipSelect 8 // declare the pin that is connected to the chip select
+Sd2Card card; // standard declaration for microSD operation
+SdVolume volume; // standard declaration for microSD operation
+SdFile root; // standard declaration for microSD operation
 
 // set up variables using the DS3231 RTC:
-RTC_DS3231 rtc;
+RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
+
+// array declaration for the days of the week
 const char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 
 void setup() {
-  Serial.begin(9600);
+  // Open serial communications and wait for port to open:
+  Serial.begin(9600); // 9600 bps serial port setting
   delay(2000);
-  dhtMain();
+  dhtMain(); // Start the function that contains what DHT should do
   delay(2000);
-  ds18B20();
-  delay(2000);
-  sdMain();
-  delay(2000);
+  sdMain(); // Start the function that contains what the microSD must do
+  delay(2000); // Start the function that contains what the real-time clock should do
   rtc3231();
-  Serial.println(F("Setup Complete"));
+  Serial.println(F("Setup Complete")); // warn in the serial monitor that the code has ended
 }
 
 void loop() {
-
+// no use of the loop since they only need to be set once
 }
 
+// Function that realizes the presence and activity of DHT
 void dhtMain(){
-  Serial.println(F("DHTxx test!"));
-  dht.begin();
+  Serial.println(F("DHTxx test!")); // warns that DHT will be tested
+  dht.begin(); // standard declaration
 
   // Reading temperature or humidity takes about 250 milliseconds!
   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
@@ -60,6 +62,7 @@ void dhtMain(){
     return;
   }
 
+  // scrive sul serial monitor prima l'umidita' e dopo la temperatura
   Serial.print(F("Humidity: "));
   Serial.print(h);
   Serial.print(F("%  Temperature: "));
@@ -67,16 +70,7 @@ void dhtMain(){
   Serial.println(F("°C \n"));  
 }
 
-void ds18B20(){
-  Serial.println(F("DS18b20 test!"));
-  temp.begin();
-  temp.requestTemperatures(); 
-  tc = temp.getTempCByIndex(0);
-  Serial.print(F("Temperature: "));
-  Serial.print(tc);
-  Serial.println(F("°C"));
-}
-
+// Function that realizes the presence and activity of the SD
 void sdMain(){
   Serial.print(F("\nInitializing SD card..."));
 
@@ -147,6 +141,7 @@ void sdMain(){
   root.ls(LS_R | LS_DATE | LS_SIZE);
 }
 
+// Function that realizes the presence and activity of the RTC
 void rtc3231(){
   Serial.println();
   if (! rtc.begin()) {
@@ -164,6 +159,7 @@ void rtc3231(){
     Serial.println();
   }
   
+  // show the date, the day of the week and the current time on the screen
   DateTime now = rtc.now();
 
     Serial.print(now.year(), DEC);
@@ -187,23 +183,7 @@ void rtc3231(){
     Serial.print(now.unixtime() / 86400L);
     Serial.println(F("d"));
 
-    // calculate a date which is 7 days and 30 seconds into the future
-    DateTime future (now + TimeSpan(7,12,30,6));
-
-    Serial.print(F(" now + 7d + 30s: "));
-    Serial.print(future.year(), DEC);
-    Serial.print('/');
-    Serial.print(future.month(), DEC);
-    Serial.print('/');
-    Serial.print(future.day(), DEC);
-    Serial.print(' ');
-    Serial.print(future.hour(), DEC);
-    Serial.print(':');
-    Serial.print(future.minute(), DEC);
-    Serial.print(':');
-    Serial.print(future.second(), DEC);
-    Serial.println();
-
+    // expresses the temperature read by the RTC
     Serial.print(F("Temperature: "));
     Serial.print(rtc.getTemperature());
     Serial.println(F(" C"));
