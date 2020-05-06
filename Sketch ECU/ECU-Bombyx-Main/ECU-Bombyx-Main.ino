@@ -6,7 +6,10 @@
 // ADD the following Arduino libraries:
 #include <SD.h>
 #include <SPI.h>
-#include <RTClib.h> // RTC:  RTClib by adafruit V.1.5.0
+#include <Adafruit_SGP30.h>
+#include <Wire.h>
+#include <ThreeWire.h> //
+#include <RtcDS1302.h> // RTC:  RTClib by adafruit V.1.5.0
 #include <DHT.h> /*DHT: DHT sensor librery by Adafruit V.1.3.8
                   *     Adafruit Unified Sensor by Adafruit V.1.1.2                        
                   *     Adafruit ADXL343 by Adafruit V.1.2.0 
@@ -21,17 +24,19 @@ DHT dht(DHTPIN, DHTTYPE); // Declare the DHT data pin and model to the DHT libra
 #define chipSelect 8 // declare the pin that is connected to the chip select
 
 // set up variables using the DS3231 RTC:
-RTC_DS3231 rtc; // declaration of the "rtc" object to the class RTC_DS3231
+ThreeWire myWire(15,16,14); // DAT->pin A1, CLK->pin A2, RS->pin A0
+RtcDS1302<ThreeWire> Rtc(myWire);
+#define countof(a) (sizeof(a) / sizeof(a[0]))
 
 // declaration of the Global variables make a string for assembling the data to log
-static String dataOnTtheRow = "000000000000000000000000000000";
+static String dataOnTtheRow;
 // Enter the initial company name without spaces followed 
 // by a progressive number for each ECU installed,
 // also entering ".csv" (maximum 12 characters)
 // Ex. Seta Etica ECU 1 => "SE01.csv"
-static String company = ""; //fill in here
+const String company = "SE01.csv"; //fill in here
 // variable to which the 15 minutes to take the readings are added
-static unsigned long pouse = (15*60*1000);
+static unsigned long pouse = 0;
 
 //*********************************************************************************
 void setup() {
@@ -46,12 +51,14 @@ void setup() {
 
 void loop() {
   // If 15 minutes of use have passed a reading
-   if(millis()>pouse){
-    pouse+=(15*60*1000); // Further increase of 15 the pause value
+  if(millis()>pouse){
+    pouse+=(15*60*1000); // Further increase of 15 the pause value, causes overflow
+    
     delay(2000); // Safety delay in case of DHT reset
     rtcMain();
     DHTMain();
     sdMain();
+    Serial.println(F("Print!"));
   }  
 }
 //---------------------------------------------------------------------------------
@@ -60,11 +67,18 @@ void loop() {
 //*********************************************************************************
 
 // The function takes care of starting and if necessary 
-// setting the date and time of the DS3231
+// setting the date and time of the DS1302
 void rtcSet(){
-  if (! rtc.begin()) {
-    Serial.println(F("Couldn't find RTC"));
-    while (1);
+  Rtc.Begin();
+
+  if (Rtc.GetIsWriteProtected()){
+//      Serial.println(F("RTC was write protected, enabling writing now"));
+      Rtc.SetIsWriteProtected(false);
+  }
+
+  if (!Rtc.GetIsRunning()){
+//      Serial.println(F("RTC was not actively running, starting now"));
+      Rtc.SetIsRunning(true);
   }
 }
 
@@ -106,14 +120,24 @@ Serial.println(F("DHT22 initialized"));
 void rtcMain(){
   // I create a DateTime object and call it now 
   // and pass it the constructor rtc.now();
-  DateTime now = rtc.now();
-  // I create a char variable to which I pass the scheme 
-  // with which to create the date and time
+  RtcDateTime now = Rtc.GetDateTime();
+  printDateTime(now);
+  Serial.println();
+
+  if (!now.IsValid())
+  {
+      // Common Causes:
+      //    1) the battery on the device is low or even missing and the power line was disconnected
+      Serial.println("RTC lost confidence in the DateTime!");
+  }
+  /*
+  //I create a char variable to which I pass the scheme 
+  //with which to create the date and time
   char buf[] = "YY/MM/DD-hh:mm";
   // dnow.toString () function converts buf and
-  // passes the date to the variable "dataOnTtheRow"
-  dataOnTtheRow =(now.toString(buf));
-  dataOnTtheRow +=(";");
+  // passes the date to the variable "dataOnTtheRow"*/
+  //dataOnTtheRow =(now.toString(buf));
+  //dataOnTtheRow +=(";");
 }
 
 // Function for reading humidity and temperature
@@ -154,5 +178,21 @@ void sdMain(){
   }
   Serial.print(company);
   Serial.println(F(" update"));
+}
+
+// The function converts and writes the time to the dataOnTtheRow variable
+void printDateTime(const RtcDateTime& dt){
+  char datestring[20];
+
+  snprintf_P(datestring, 
+          countof(datestring),
+          PSTR("%04u/%02u/%02u %02u:%02u"),
+          dt.Year(),
+          dt.Month(),
+          dt.Day(),
+          dt.Hour(),
+          dt.Minute());
+  dataOnTtheRow = (F(datestring));
+  dataOnTtheRow +=(";");
 }
 //---------------------------------------------------------------------------------
