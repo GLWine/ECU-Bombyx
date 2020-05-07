@@ -4,11 +4,13 @@
 #include <Adafruit_SGP30.h>
 
 Adafruit_SGP30 sgp;
-//const unsigned long timeL = (44100000);
-//static unsigned long timeS1 = (1800000);
 const unsigned long timeL = 44100000; //12 hour
 static unsigned long timeS1 = 60000; // 1 minute
 static unsigned long timeS2 = 1800000; //30 minute
+
+//const unsigned long timeL = 600000; //10 minute
+//static unsigned long timeS1 = 60000; // 1 minute
+//static unsigned long timeS2 = 300000; //5 minute
 
 // set up variables using the SD utility library functions:
 const int chipSelect = 4; // declare the pin that is connected to the chip select
@@ -42,15 +44,26 @@ void setup() {
 
   if (! sgp.begin()){
     Serial.println(F("Sensor not found :("));
+    while (1);
   }
   Serial.print(F("Found SGP30 serial #"));
   Serial.print(sgp.serialnumber[0], HEX);
   Serial.print(sgp.serialnumber[1], HEX);
   Serial.println(sgp.serialnumber[2], HEX);
-  Serial.println(F("Calibration start ... (duration 12h)\n******************************"));
+  Serial.println(F("Calibration start... (duration 12h)\n******************************"));
 
   // If you have a baseline measurement from before you can assign it to start, to 'self-calibrate'
   //sgp.setIAQBaseline(0x8E68, 0x8F41);  // Will vary for each sensor!
+  myFilex = SD.open("Cali.csv", FILE_WRITE);
+    
+      // if the file is available, write to it:
+      if (myFilex) {
+        myFilex.println(F("eCO2;TVOC"));
+        myFilex.close();
+      } else {
+        // if the file didn't open, print an error:
+        Serial.println(F("error opening Cali.csv"));
+      }
 }
 int i = 0;
 
@@ -83,12 +96,33 @@ void loop() {
     }
 
     if(millis()>=timeS2){
-      timeS2 += 1800000;
+      timeS2 += 1800000; //30 minute
+      //timeS2 += 300000; // 5 minute
 
       if (! sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
         Serial.println(F("Failed to get baseline readings"));
       }
-      Serial.println(F("\n30 minutes have passed"));
+      Serial.println(F("\n30 minutes have passed!"));
+      dataString = (F("0x"));
+      dataString += String(eCO2_base, HEX);
+      dataString += (F(";"));
+      dataString += (F("0x"));
+      dataString += String(TVOC_base, HEX);
+      
+      // open the file. note that only one file can be open at a time,
+      // so you have to close this one before opening another.
+      myFilex = SD.open("Cali.csv", FILE_WRITE);
+    
+      // if the file is available, write to it:
+      if (myFilex) {
+        myFilex.println(dataString);
+        myFilex.close();
+        // print to the serial port too:
+        Serial.println(dataString);
+      } else {
+        // if the file didn't open, print an error:
+        Serial.println(F("error opening BLP1"));
+      }
     }
   }
   else {
@@ -96,7 +130,6 @@ void loop() {
             
       if (! sgp.getIAQBaseline(&eCO2_base, &TVOC_base)) {
         Serial.println(F("Failed to get baseline readings"));
-        return;
       }
       Serial.println(F("\n\n\nProcess terminated!!!"));
       Serial.print(F("****Baseline values: eCO2: 0x"));
@@ -109,11 +142,11 @@ void loop() {
       SD.remove("BLp1.txt");
       SD.remove("BLp2.txt");
 
-      dataString = "0x";
+      dataString = (F("0x"));
       dataString += String(eCO2_base, HEX);
       // open the file. note that only one file can be open at a time,
       // so you have to close this one before opening another.
-      myFilex = SD.open("BLp1.txt", FILE_WRITE);
+      myFilex = SD.open("eCO2.txt", FILE_WRITE);
     
       // if the file is available, write to it:
       if (myFilex) {
@@ -123,14 +156,14 @@ void loop() {
         Serial.println(dataString);
       } else {
         // if the file didn't open, print an error:
-        Serial.println(F("error opening BLP1"));
+        Serial.println(F("error opening eCO2"));
       }
 
-      dataString = "0x";
+      dataString = (F("0x"));
       dataString += String(TVOC_base, HEX);
       // open the file. note that only one file can be open at a time,
       // so you have to close this one before opening another.
-      myFiley = SD.open("BLp2.txt", FILE_WRITE);
+      myFiley = SD.open("TVOC.txt", FILE_WRITE);
     
       // if the file is available, write to it:
       if (myFiley) {
@@ -141,7 +174,7 @@ void loop() {
         Serial.println();
       } else {
         // if the file didn't open, print an error:
-        Serial.println(F("error opening BLP2"));
+        Serial.println(F("error opening TVOC"));
       }
       i=2;
     }
