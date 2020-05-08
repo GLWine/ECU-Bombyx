@@ -2,6 +2,11 @@
 #include <SD.h>
 #include <Wire.h>
 #include <Adafruit_SGP30.h>
+#include "DHT.h"
+
+#define DHTPIN 2
+#define DHTTYPE DHT22
+DHT dht(DHTPIN, DHTTYPE);
 
 Adafruit_SGP30 sgp;
 const unsigned long timeL = 44100000; //12 hour
@@ -38,6 +43,9 @@ void setup() {
     Serial.println(F("initialization failed!"));
     while (1);
   }
+  
+  dht.begin();
+  
   Serial.println(F("initialization done."));
   
   Serial.println(F("SGP30 test"));
@@ -73,9 +81,9 @@ void loop() {
   
   if (millis()<timeL){
     // If you have a temperature / humidity sensor, you can set the absolute humidity to enable the humditiy compensation for the air quality signals
-    //float temperature = 22.1; // [°C]
-    //float humidity = 45.2; // [%RH]
-    //sgp.setHumidity(getAbsoluteHumidity(temperature, humidity));
+    float temperature = dht.readTemperature(); // [°C]
+    float humidity = dht.readHumidity(); // [%RH]
+    sgp.setHumidity(getAbsoluteHumidity(temperature, humidity));
 
     if (! sgp.IAQmeasure()) {
       Serial.println(F("Measurement failed"));
@@ -89,7 +97,8 @@ void loop() {
     //Serial.print("Raw H2 "); Serial.print(sgp.rawH2); Serial.print(" \t");
     //Serial.print("Raw Ethanol "); Serial.print(sgp.rawEthanol); Serial.println("");
 
-    delay(1000);
+    delay(2000);
+    
     if(millis()> timeS1){
       Serial.print(F("."));
       timeS1+=60000;
@@ -138,15 +147,15 @@ void loop() {
       Serial.println(TVOC_base, HEX);
 
       // delete the file:
-      Serial.println(F("Removing old BLp1 and BLP2..."));
-      SD.remove("BLp1.txt");
-      SD.remove("BLp2.txt");
+      Serial.println(F("Removing old ECO2 and TVOC..."));
+      SD.remove("ECO2.TXT");
+      SD.remove("TVOC.TXT");
 
       dataString = (F("0x"));
       dataString += String(eCO2_base, HEX);
       // open the file. note that only one file can be open at a time,
       // so you have to close this one before opening another.
-      myFilex = SD.open("eCO2.txt", FILE_WRITE);
+      myFilex = SD.open("ECO2.TXT", FILE_WRITE);
     
       // if the file is available, write to it:
       if (myFilex) {
@@ -163,7 +172,7 @@ void loop() {
       dataString += String(TVOC_base, HEX);
       // open the file. note that only one file can be open at a time,
       // so you have to close this one before opening another.
-      myFiley = SD.open("TVOC.txt", FILE_WRITE);
+      myFiley = SD.open("TVOC.TXT", FILE_WRITE);
     
       // if the file is available, write to it:
       if (myFiley) {
